@@ -1,0 +1,119 @@
+---
+- name: create system group
+  group:
+    name: "{{ adguard_exporter_system_group }}"
+    system: true
+    state: present
+  become: true
+  tags: adguard_exporter
+
+- name: create system user
+  user:
+    name: "{{ adguard_exporter_system_user }}"
+    system: true
+    shell: "/usr/sbin/nologin"
+    group: "{{ adguard_exporter_system_group }}"
+    createhome: false
+  become: true
+  tags: adguard_exporter
+
+- name: generate version file
+  copy:
+    content: "{{ adguard_exporter_version }}"
+    dest: "/etc/default/adguard_exporter_version"
+    owner: "root"
+    group: "root"
+    mode: "0644"
+  become: true
+  tags: adguard_exporter
+
+- name: check if is installed
+  stat:
+    path: "{{ adguard_exporter_binary_install_dir }}/adguard_exporter"
+  register: __adguard_exporter_is_installed
+  become: true
+  tags: adguard_exporter
+
+- name: gather currently installed version (if any)
+  command: "/usr/bin/cat /etc/default/adguard_exporter_version"
+  args:
+    warn: false
+  changed_when: false
+  register: __adguard_exporter_current_version_output
+  when: __adguard_exporter_is_installed.stat.exists
+  become: true
+  tags: adguard_exporter
+
+- name: get latest release
+  uri: 
+    url: "https://api.github.com/repos/ebrianne/adguard-exporter/releases/latest"
+    method: GET
+    return_content: true
+    status_code: "200"
+    body_format: json
+    validate_certs: false
+    user: "{{ lookup('env', 'GH_USER') | default(omit) }}"
+    password: "{{ lookup('env', 'GH_TOKEN') | default(omit) }}"
+  environment: "{{ proxy_env }}"
+  no_log: "{{ not lookup('env', 'MOLECULE_DEBUG') | bool }}"
+  register: _latest_release
+  until: _latest_release.status == 200
+  retries: 5
+  become: true
+  tags: adguard_exporter
+  when: adguard_exporter_version == "latest"
+
+- name: "set version to {{ _latest_release.json.tag_name[1:] }}"
+  set_fact:
+    adguard_exporter_version: "{{ _latest_release.json.tag_name[1:] }}"
+  become: true
+  tags: adguard_exporter
+  when: adguard_exporter_version == "latest"
+
+- name: download binary to local folder
+  get_url:
+    url: "https://github.com/ebrianne/adguard-exporter/releases/download/v{{ adguard_exporter_version }}/adguard_exporter-linux-{{ go_arch }}"
+    dest: "/tmp/adguard_exporter-{{ adguard_exporter_version }}.linux-{{ go_arch }}"
+  environment: "{{ proxy_env }}"
+  register: _download_archive
+  until: _download_archive is succeeded
+  retries: 5
+  delay: 2
+  # run_once: true # <-- this can't be set due to multi-arch support
+  delegate_to: localhost
+  check_mode: false
+  become: true
+  tags: adguard_exporter
+  when: (not __adguard_exporter_is_installed.stat.exists) or (__adguard_exporter_current_version_output.stdout_lines[0] != adguard_exporter_version)
+
+- name: propagate binaries
+  copy:
+    src: "/tmp/adguard_exporter-{{ adguard_exporter_version }}.linux-{{ go_arch }}"
+    dest: "{{ adguard_exporter_binary_install_dir }}/adguard_exporter"
+    mode: 0755
+    owner: root
+    group: root
+  notify: restart adguard_exporter
+  become: true
+  tags: adguard_exporter
+  when: (not __adguard_exporter_is_installed.stat.exists) or (__adguard_exporter_current_version_output.stdout_lines[0] != adguard_exporter_version)
+
+- name: create systemd service unit
+  template:
+    src: adguard_exporter.service.j2
+    dest: /etc/systemd/system/adguard_exporter.service
+    owner: root
+    group: root
+    mode: 0644
+  notify: restart adguard_exporter
+  become: true
+  tags: adguard_exporter
+
+- name: start and enable adguard_exporter service
+  systemd:
+    daemon_reload: true
+    name: adguard_exporter
+    state: started
+    enabled: true
+  become: true
+  tags: adguard_exporter

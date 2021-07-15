@@ -1,0 +1,44 @@
+{{ ansible_managed | comment }}
+[Unit]
+Description=Adguard Exporter
+Documentation=https://github.com/ebrianne/adguard-exporter
+After=network-online.target
+
+[Service]
+Type=simple
+User={{ adguard_exporter_system_user }}
+Group={{ adguard_exporter_system_group }}
+ExecReload=/bin/kill -HUP $MAINPID
+ExecStart={{ adguard_exporter_binary_install_dir }}/adguard_exporter \
+{% if adguard_exporter_scrape_interval is defined and adguard_exporter_scrape_interval | length > 0 %}
+  -interval {{ adguard_exporter_scrape_interval | default('30s') }} \
+{% endif %}
+{% if adguard_exporter_adguard_protocol is defined and adguard_exporter_adguard_protocol | length > 0 %}
+  -adguard_protocol {{ adguard_exporter_adguard_protocol | default('http') }} \
+{% endif %}
+{% if adguard_exporter_adguard_username is defined and adguard_exporter_adguard_username | length > 0 %}
+  -adguard_username {{ adguard_exporter_adguard_username }} \
+{% endif %}
+{% if adguard_exporter_adguard_password is defined and adguard_exporter_adguard_password | length > 0 %}
+  -adguard_password {{ adguard_exporter_adguard_password }} \
+{% endif %}
+{% if adguard_exporter_adguard_port is defined and adguard_exporter_adguard_port | length > 0 %}
+  -adguard_port {{ adguard_exporter_adguard_port | default('3200') }} \
+{% endif %}
+{% if adguard_exporter_log_limit is defined and adguard_exporter_log_limit | length > 0 %}
+  -adguard_port {{ adguard_exporter_log_limit | default('1000') }} \
+{% endif %}
+{% if adguard_exporter_web_listen_address is defined and adguard_exporter_web_listen_address | length > 0 %}
+  -adguard_hostname {{ adguard_exporter_web_listen_address | default('127.0.0.1') }} \
+{% endif %}
+{% if adguard_exporter_web_listen_port is defined and adguard_exporter_web_listen_port | length > 0 %}
+  -server_port {{ adguard_exporter_web_listen_port | default('3200') }}
+{% endif %}
+
+SyslogIdentifier=adguard_exporter
+Restart=always
+RestartSec=5
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

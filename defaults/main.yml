@@ -1,0 +1,14 @@
+---
+proxy_env: {}
+adguard_exporter_version: 1.13
+adguard_exporter_binary_install_dir: /usr/local/bin
+adguard_exporter_system_user: "{{ prometheus_user | default('adguard_exporter') }}"
+adguard_exporter_system_group: "{{ prometheus_group | default('adguard_exporter') }}"
+adguard_exporter_web_listen_port: 9617
+adguard_exporter_web_listen_address: 0.0.0.0
+adguard_exporter_scrape_interval: 60s
+adguard_exporter_log_limit: 1000
+adguard_exporter_adguard_protocol: http
+adguard_exporter_adguard_username: ""
+adguard_exporter_adguard_password: ""
+adguard_exporter_adguard_port: 3200

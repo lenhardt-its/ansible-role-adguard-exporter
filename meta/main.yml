@@ -1,0 +1,23 @@
+---
+galaxy_info:
+  role_name: adguard_exporter
+  author: Dominik Lenhardt
+  description: Installing and configure ad-blocking DNS-server Adguard Home Prometheus Exporter (https://github.com/ebrianne/adguard-exporter).
+  license: "MIT"
+  min_ansible_version: 2.9
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - bionic
+  galaxy_tags:
+  - system
+  - network
+  - linux
+  - adguard
+  - prometheus
+  - exporter
+  - dns
+  - adblocking
+  - networking
+dependencies: []
