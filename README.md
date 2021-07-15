@@ -1,4 +1,4 @@
-# Ansible Role: AdguardHome
+# Ansible Role: AdguardHome Exporter
 
 [![ubuntu-18](https://img.shields.io/badge/ubuntu-18.x-orange?style=flat&logo=ubuntu)](https://ubuntu.com/)
 [![ubuntu-20](https://img.shields.io/badge/ubuntu-20.x-orange?style=flat&logo=ubuntu)](https://ubuntu.com/)
@@ -10,7 +10,7 @@
 
 ## Description
 
-Deploy and manage [AdGuardHome](https://github.com/AdguardTeam/AdGuardHome) service using ansible.
+Deploy and manage [AdGuardHome Exporter](https://github.com/AdguardTeam/AdGuardHome) service using ansible.
 
 ## Requirements
 
