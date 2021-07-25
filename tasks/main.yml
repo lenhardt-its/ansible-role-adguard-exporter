@@ -35,7 +35,7 @@
   tags: adguard_exporter
 
 - name: gather currently installed version (if any)
-  command: "/usr/bin/cat /etc/default/adguard_exporter_version"
+  command: "/bin/cat /etc/default/adguard_exporter_version"
   args:
     warn: false
   changed_when: false

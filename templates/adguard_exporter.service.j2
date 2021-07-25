@@ -22,16 +22,16 @@ ExecStart={{ adguard_exporter_binary_install_dir }}/adguard_exporter \
 {% if adguard_exporter_adguard_password is defined and adguard_exporter_adguard_password | length > 0 %}
   -adguard_password {{ adguard_exporter_adguard_password }} \
 {% endif %}
-{% if adguard_exporter_adguard_port is defined and adguard_exporter_adguard_port | length > 0 %}
+{% if adguard_exporter_adguard_port is defined %}
   -adguard_port {{ adguard_exporter_adguard_port | default('3200') }} \
 {% endif %}
-{% if adguard_exporter_log_limit is defined and adguard_exporter_log_limit | length > 0 %}
+{% if adguard_exporter_log_limit is defined %}
   -adguard_port {{ adguard_exporter_log_limit | default('1000') }} \
 {% endif %}
 {% if adguard_exporter_web_listen_address is defined and adguard_exporter_web_listen_address | length > 0 %}
   -adguard_hostname {{ adguard_exporter_web_listen_address | default('127.0.0.1') }} \
 {% endif %}
-{% if adguard_exporter_web_listen_port is defined and adguard_exporter_web_listen_port | length > 0 %}
+{% if adguard_exporter_web_listen_port is defined %}
   -server_port {{ adguard_exporter_web_listen_port | default('3200') }}
 {% endif %}
 
