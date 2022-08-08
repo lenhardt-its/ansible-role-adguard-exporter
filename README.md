@@ -10,7 +10,7 @@
 
 ## Description
 
-Deploy and manage [AdGuardHome Exporter](https://github.com/AdguardTeam/AdGuardHome) service using ansible.
+Deploy and manage [AdGuardHome Exporter](https://github.com/ebrianne/adguard-exporter) service using ansible.
 
 ## Requirements
 

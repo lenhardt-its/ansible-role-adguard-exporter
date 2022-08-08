@@ -1,6 +1,6 @@
 ---
 proxy_env: {}
-adguard_exporter_version: 1.13
+adguard_exporter_version: 1.14
 adguard_exporter_binary_install_dir: /usr/local/bin
 adguard_exporter_system_user: "{{ prometheus_user | default('adguard_exporter') }}"
 adguard_exporter_system_group: "{{ prometheus_group | default('adguard_exporter') }}"
